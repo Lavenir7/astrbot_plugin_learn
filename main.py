@@ -19,9 +19,10 @@ class MyPlugin(Star):
         message_chain = event.get_messages() # 用户所发的消息的消息链 # from astrbot.api.message_components import *
         logger.info(message_chain)
         yield event.plain_result(f"Hello, {user_name}, 你发了 {message_str}!") # 发送一条纯文本消息
-        
+
     @filter.command("add")
     async def add(self, event: AstrMessageEvent, a: int|float, b: int|float):
+        a, b = [eval(i) for i in (a, b)]
         yield event.plain_result(f"OK! {a} + {b} = {a+b}")
 
     async def terminate(self):
