@@ -20,10 +20,13 @@ class MyPlugin(Star):
         logger.info(message_chain)
         yield event.plain_result(f"Hello, {user_name}, 你发了 {message_str}!") # 发送一条纯文本消息
 
-    @filter.command("add")
-    async def add(self, event: AstrMessageEvent, a: int|float, b: int|float):
-        a, b = [eval(i) for i in (a, b)]
-        yield event.plain_result(f"OK! {a} + {b} = {a+b}")
+    @filter.command_group("math")
+    def math(self):
+        pass
+    @math.command("add")
+    async def add(self, event: AstrMessageEvent, *nums):
+        nums_e = [eval(i) for i in nums]
+        yield event.plain_result(f"OK! {'+'.join(nums)} = {sum(nums_e)}")
 
     async def terminate(self):
         """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
