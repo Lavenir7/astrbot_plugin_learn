@@ -5,7 +5,6 @@ from pathlib import Path
 from astrbot.core.utils.astrbot_path import get_astrbot_data_path
 import json
 
-plugin_data_path = Path(get_astrbot_data_path()) / "plugin_data" / self.name
 done_emoji = "✅"
 todo_emoji = "✏️" # ◾
 
@@ -13,6 +12,7 @@ todo_emoji = "✏️" # ◾
 class MyPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
+        plugin_data_path = Path(get_astrbot_data_path()) / "plugin_data" / self.name
         self.todo_json_path = Path(plugin_data_path) / "todo.json"
 
     async def initialize(self):
