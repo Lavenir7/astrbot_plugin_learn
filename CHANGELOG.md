@@ -4,3 +4,5 @@
 添加新 command：`add`
 ## v1.0.2
 添加新 command group：`math`，包含 command：`multi`
+## v1.1.0
+更新为“TODO”插件

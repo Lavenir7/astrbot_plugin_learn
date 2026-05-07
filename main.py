@@ -1,36 +1,40 @@
 from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
 from astrbot.api.star import Context, Star, register
 from astrbot.api import logger
+from pathlib import Path
+from astrbot.core.utils.astrbot_path import get_astrbot_data_path
+import json
 
-@register("abplugin_learn", "L'avenir", "astrbot插件学习", "1.0.0")
+@register("abplugin_todo", "L'avenir", "TODO", "1.1.0")
 class MyPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
+        self.plugin_data_path = Path(get_astrbot_data_path()) / "plugin_data" / self.name
 
     async def initialize(self):
         """可选择实现异步的插件初始化方法，当实例化该插件类之后会自动调用该方法。"""
 
+
     # 注册指令的装饰器。指令名为 helloworld。注册成功后，发送 `/helloworld` 就会触发这个指令，并回复 `你好, {user_name}!`
-    @filter.command("helloworld")
-    async def helloworld(self, event: AstrMessageEvent):
-        """这是一个 hello world 指令""" # 这是 handler 的描述，将会被解析方便用户了解插件内容。建议填写。
+    @filter.command("todotest")
+    async def todotest(self, event: AstrMessageEvent):
+        """todo插件测试""" # 这是 handler 的描述，将会被解析方便用户了解插件内容。建议填写。
         user_name = event.get_sender_name()
         message_str = event.message_str # 用户发的纯文本消息字符串
         message_chain = event.get_messages() # 用户所发的消息的消息链 # from astrbot.api.message_components import *
-        logger.info(message_chain)
-        yield event.plain_result(f"Hello, {user_name}, 你发了 {message_str}!") # 发送一条纯文本消息
+        logger.info(f"[todo] | {message_chain}")
+        yield event.plain_result(f"{self.plugin_data_path}") # 发送一条纯文本消息
 
-    @filter.command_group("math")
-    def math(self):
+    @filter.command_group("todo")
+    def todo(self):
+        """待办前置指令"""
         pass
-    @math.command("add")
-    async def add(self, event: AstrMessageEvent, a: int|float, b: int|float):
-        a, b = [eval(i) for i in (a, b)]
+    @todo.command("add")
+    async def add(self, event: AstrMessageEvent, msg: str):
+        """添加待办"""
+        user_name = event.get_sender_name()
+                
         yield event.plain_result(f"OK! {a} + {b} = {a+b}")
-    @math.command("multi")
-    async def multi(self, event: AstrMessageEvent, a: int|float, b: int|float):
-        a, b = [eval(i) for i in (a, b)]
-        yield event.plain_result(f"OK! {a} * {b} = {a*b}")
 
     async def terminate(self):
         """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
