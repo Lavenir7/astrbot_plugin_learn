@@ -5,7 +5,7 @@ from pathlib import Path
 from astrbot.core.utils.astrbot_path import get_astrbot_data_path
 import json
 
-@register("abplugin_todo", "L'avenir", "TODO", "1.1.0")
+@register("astrbot_plugin_todo", "L'avenir", "TODO", "1.1.0")
 class MyPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
