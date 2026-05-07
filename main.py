@@ -27,7 +27,7 @@ class MyPlugin(Star):
         message_str = event.message_str # 用户发的纯文本消息字符串
         message_chain = event.get_messages() # 用户所发的消息的消息链 # from astrbot.api.message_components import *
         logger.info(f"[todo] | {message_chain}")
-        yield event.plain_result(f"{self.plugin_data_path}") # 发送一条纯文本消息
+        yield event.plain_result(f"{self.todo_json_path}") # 发送一条纯文本消息
 
     def read_todo(self):
         if not self.todo_json_path.exists():
