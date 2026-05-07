@@ -82,7 +82,7 @@ class MyPlugin(Star):
         if user_name not in todo_list or len(todo_list[user_name]) == 0:
             yield event.plain_result(f"{user_name} 没有待办了呀~")
             return
-        if index > len(todo_list[user_name]) or index <= 0:
+        if index >= len(todo_list[user_name]) or index < 0:
             yield event.plain_result(f"没有待办 [{index+1}] 哦~")
             return
         todo_list[user_name].pop(index)
@@ -98,7 +98,7 @@ class MyPlugin(Star):
         if user_name not in todo_list or len(todo_list[user_name]) == 0:
             yield event.plain_result(f"{user_name} 没有待办了呀~")
             return
-        if index > len(todo_list[user_name]) or index <= 0:
+        if index >= len(todo_list[user_name]) or index < 0:
             yield event.plain_result(f"没有待办 [{index+1}] 哦~")
             return
         todo_list[user_name][index]["done"] = True
