@@ -34,7 +34,7 @@ todo.json:
 done_emoji = "✅"
 todo_emoji = "◾" # ✏️
 
-@register("astrbot_plugin_todo", "L'avenir", "TODO", "2.0.0")
+@register("astrbot_plugin_todo", "L'avenir", "TODO", "2.1.0")
 class MyPlugin(Star):
     def __init__(self, context: Context, config: AstrBotConfig):
         super().__init__(context)
@@ -88,17 +88,24 @@ class MyPlugin(Star):
         with open(self.todo_json_path, "w") as f:
             json.dump(todo_list, f)
     
-    def print_todo(self, todo_list: dict, user_name: str) -> str:
+    def print_todo(self, todo_list: dict, user_name: str, simple: int = 0) -> str:
+        """
+        simple: 简洁等级
+        - 0: 全部待办、待办统计；
+        - 1: 无待办统计；
+        - 2: 无待办统计和已完成待办；
+        """
         todo_number = todo_list["attrs"]["todo_number"]
         index_width = len(str(todo_number[0]+1))
         todo = todo_list["todo"]
         todo_printer = f"{user_name}待办列表："
         for i, todoi in enumerate(todo):
             if todoi["done"]:
-                todo_printer += f"\n{done_emoji} [{i+1:>{index_width}}] ~~{todoi['msg']}~~"
+                if simple < 2:
+                    todo_printer += f"\n{done_emoji} [{i+1:>{index_width}}] ~~{todoi['msg']}~~"
             else:
                 todo_printer += f"\n{todo_emoji} [{i+1:>{index_width}}] {todoi['msg']}"
-        if todo_number[2] != 0:
+        if simple < 1 and todo_number[2] != 0:
             todo_printer += "\n----------"
             todo_printer += f"\n真棒，已经完成{todo_number[2]}项待办啦！"
             todo_printer += f"\n还有{todo_number[1]}项待办未完成，加油哦！"
@@ -268,6 +275,36 @@ class MyPlugin(Star):
         mod_explain = (("查看待办", "操作待办", "修改属性"), ("私人", "公开"))
         yield event.plain_result(f"好的，把{user_name}待办的权限更改为【{' | '.join(f'{mod_explain[0][i]}: {mod_explain[1][int(modi)]}' for i, modi in enumerate(mod))}】啦")
 
+    @todo.command("how")
+    async def how(self, event: AstrMessageEvent, user_name: str = None):
+        """让 AI 给待办做一个规划"""
+        requester_name = event.get_sender_name()
+        if user_name is None:
+            user_name = requester_name
+        todo_list = self.read_todo()
+        if user_name not in todo_list:
+            yield event.plain_result(f"{user_name}没有待办呀~")
+            return
+        if int(todo_list[user_name]["attrs"]["perm"][0]) and requester_name != user_name:
+            yield event.plain_result(f"不好意思，{requester_name}。你没有查看{user_name}待办的权限哦~")
+            return
+        if len(todo_list[user_name]["todo"]) == 0:
+            yield event.plain_result(f"{user_name}已经没有待办啦~")
+            return
+        umo = event.unified_msg_origin
+        provider_id = await self.context.get_current_chat_provider_id(umo=umo)
+        todo_printer = self.print_todo(todo_list, user_name, 2)
+        prompt = f"""{self.config['how_prompt_pre']}
+        ---
+        > [!note]
+        > 已经完成的待办已隐藏
+
+        {todo_printer}"""
+        llm_resp = await self.context.llm_generate(
+            chat_provider_id=provider_id,
+            prompt=prompt,
+        )
+        yield event.plain_result(llm_resp.completion_text)
 
 
     async def terminate(self):
