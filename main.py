@@ -53,7 +53,8 @@ class MyPlugin(Star):
         message_str = event.message_str # 用户发的纯文本消息字符串
         message_chain = event.get_messages() # 用户所发的消息的消息链 # from astrbot.api.message_components import *
         logger.info(f"[todo] | {message_chain}")
-        yield event.plain_result(f"{type(self.config)}, {self.config}")
+        todo_test = self.read_todo()
+        yield event.plain_result(f"{todo_test}")
 
     def init_user_todo(self) -> dict:
         init_utd = {
