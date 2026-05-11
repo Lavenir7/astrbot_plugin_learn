@@ -34,7 +34,7 @@ todo.json:
 done_emoji = "✅"
 todo_emoji = "◾" # ✏️
 
-@register("astrbot_plugin_todo", "L'avenir", "TODO", "2.1.0")
+@register("astrbot_plugin_todo", "L'avenir", "TODO", "2.1.1")
 class MyPlugin(Star):
     def __init__(self, context: Context, config: AstrBotConfig):
         super().__init__(context)
@@ -96,9 +96,9 @@ class MyPlugin(Star):
         - 1: 无待办统计；
         - 2: 无待办统计和已完成待办；
         """
-        todo_number = todo_list["attrs"]["todo_number"]
+        todo_number = todo_list[user_name]["attrs"]["todo_number"]
         index_width = len(str(todo_number[0]+1))
-        todo = todo_list["todo"]
+        todo = todo_list[user_name]["todo"]
         todo_printer = f"{user_name}待办列表："
         for i, todoi in enumerate(todo):
             if todoi["done"]:
@@ -218,7 +218,7 @@ class MyPlugin(Star):
         if user_name not in todo_list:
             yield event.plain_result(f"{user_name}没有待办呀~")
             return
-        if int(todo_list[user_name]["attrs"]["perm"][1]) and requester_name != user_name:
+        if int(todo_list[user_name]["attrs"]["perm"][0]) and requester_name != user_name:
             yield event.plain_result(f"不好意思，{requester_name}。你没有查看{user_name}待办的权限哦~")
             return
         if len(todo_list[user_name]["todo"]) == 0:
