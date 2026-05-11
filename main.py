@@ -123,7 +123,7 @@ class MyPlugin(Star):
 
     def get_mod(self, mod: str) -> str | None:
         if len(mod) == 1 and int(mod) >= 0 and int(mod) <= 7:
-            mod = bin(int(mod))[2:]
+            mod = f"{bin(int(mod))[2:]:0>3}"
         elif len(mod) == 3 and all([mi in "01" for mi in mod]):
             mod = mod
         else:
