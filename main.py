@@ -217,7 +217,7 @@ class MyPlugin(Star):
         if user_name not in todo_list:
             yield event.plain_result(f"{user_name}没有待办呀~")
             return
-        if int(todo_list[user_name]["attrs"]["perm"][0]) and requester_name != user_name:
+        if int(todo_list[user_name]["attrs"]["perm"][1]) and requester_name != user_name:
             yield event.plain_result(f"不好意思，{requester_name}。你没有查看{user_name}待办的权限哦~")
             return
         if len(todo_list[user_name]["todo"]) == 0:
